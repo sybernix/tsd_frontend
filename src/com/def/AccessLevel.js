@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableRow, Paper, TableContainer
 import { Field, reduxForm } from "redux-form";
 import { Edit } from "@material-ui/icons"
 
-import df_access_level from "../../class/data/df_access_level";
+import df_access_level from "../../lib/class/data/df_access_level";
 const styles = theme => ({
   form: { width: "100%", marginTop: theme.spacing(3) },
   table: { width: "100%" },
@@ -17,7 +17,7 @@ class AccessLevel extends Component {
   constructor(props) {
     super(props);
     console.log(new df_access_level());
-  }
+  }  
 
   rows = [
     new df_access_level()
