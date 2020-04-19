@@ -1,7 +1,7 @@
 import React from "react";
-import Header from "./Header";
-import Body from "./Body";
-import Footer from "./Footer";
+import Header from "./parts/Header";
+import Body from "./parts/Body";
+import Footer from "./parts/Footer";
 
 let drawerWidth = 250;
 

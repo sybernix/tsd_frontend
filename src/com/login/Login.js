@@ -1,13 +1,17 @@
-import React, { Component, useState } from "react";
-import PropTypes from "prop-types";
-import clsx from "clsx";
-import { withStyles } from "@material-ui/core/styles";
-import { LockOutlined, Visibility, VisibilityOff } from "@material-ui/icons/";
-import { Alert, AlertTitle } from "@material-ui/lab";
-import { Avatar, Button, CssBaseline, TextField, FormHelperText, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container, IconButton, FormControl, Input, InputLabel, InputAdornment } from "@material-ui/core/";
+import React, { Component } from "react";
+import { Avatar, Button, CssBaseline, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container, IconButton, FormControl, Input, InputLabel, InputAdornment } from "@material-ui/core/";
 
-import Sumbit from "./Submit";
+import { LockOutlined, Visibility, VisibilityOff } from "@material-ui/icons";
+import { withStyles } from "@material-ui/core/styles";
+import { Alert } from "@material-ui/lab";
+
+import clsx from "clsx";
+import Cookies from 'js-cookie';
+
 import { Field, reduxForm } from "redux-form";
+import { getJWT } from './../../lib/global/helpers';
+import Call from "./../../lib/api/Call";
+
 
 const styles = theme => ({
   paper: { marginTop: theme.spacing(8), display: "flex", flexDirection: "column", alignItems: "center" },
@@ -17,11 +21,38 @@ const styles = theme => ({
 });
 
 class Login extends Component {
+  
+  state = { 
+    showPassword: false, 
+    errorMessage: "" 
+  };
+
   constructor(props) {
     super(props);
   }
 
-  state = { showPassword: false };
+  componentDidMount() {
+    const jwt = getJWT();
+    let invalid = false;
+    if (jwt.token != null && jwt.userLevel != null) this.props.history.push("/dashboard");
+  }
+
+  onSubmit = (values) => {
+    Call.Request("login", null, values)
+    .then(response => {   
+      let token = response.data.token;
+      let userType = response.data.userType;
+      let exp = values.remember? 365 : 1;
+      Cookies.set('infinity', token, { expires: exp });
+      Cookies.set('usuario', userType, { expires: exp });
+      
+      this.props.history.push("/dashboard");
+    })
+    .catch(() => {
+      this.props.dispatch(this.props.reset('loginVerification'));
+      this.setState ({ errorMessage : "Authantication failed" });
+    });
+  }
 
   handlePassword = () => {
     this.setState(() => {
@@ -29,7 +60,6 @@ class Login extends Component {
       return { showPassword: val };
     });
   };
-
 
   renderUsername = 
   ({ input, label, type, id, meta: { touched, error, warning } }) => (
@@ -68,9 +98,10 @@ class Login extends Component {
     <Checkbox {...input} color="primary" />
   );
 
-  render() {
+  render() {    
+
     const { classes } = this.props;
-    const { error, handleSubmit, pristine, reset, submitting, invalid } = this.props;
+    const { handleSubmit, pristine, submitting, invalid } = this.props;
 
     return (
       <Container component="main" maxWidth="xs">
@@ -82,14 +113,13 @@ class Login extends Component {
           <Typography component="h1" variant="h5" className={"pacifico"}>
             Log in to Shilpa
           </Typography>
-          <form className={classes.form} onSubmit={handleSubmit(Sumbit)}>
+          <form className={classes.form} onSubmit={handleSubmit(this.onSubmit.bind(this))}>
             <div className={clsx(classes.margin, classes.textField)}></div>
-  
               <Field name="username" type="text" component={this.renderUsername} label="Phone/Index" id="txtUsername" />
               <Field name="password" type="text" component={this.renderPassword} label="Password" id="txtPassword" classes={classes} />
            
             <FormControlLabel control={ <Field name="remember" component={this.renderCheckbox} /> } label="Remember me next time" />
-              {error && <Alert severity="error">{error}</Alert>}
+              {this.state.errorMessage && <Alert severity="error">{this.state.errorMessage}</Alert>}
             <Button type="submit" fullWidth variant="contained" color="primary" disabled={submitting || pristine || invalid} className={classes.submit} >
               Log In
             </Button>
@@ -104,9 +134,7 @@ class Login extends Component {
         </div>
         <Box mt={8}>
           <Typography variant="body2" color="textSecondary" align="center">
-            {"Copyright © "}
-            <Link color="inherit" href="http://www.shilpa.lk">www.shilpa.lk</Link>
-            {" 2019-"}{new Date().getFullYear()}{"."}
+            {"Copyright © "} <Link color="inherit" href="http://www.shilpa.lk">www.shilpa.lk</Link> {" 2019-"}{new Date().getFullYear()}{"."}
           </Typography>
         </Box>
       </Container>
@@ -126,7 +154,9 @@ const warn = values => {
 };
 
 export default reduxForm({
+  initialValues: { type: "login", },
+  enableReinitialize: true,
   form: "loginVerification",
-  validate,
-  warn
+  validate : validate,
+  warn : warn
 })(withStyles(styles)(Login));

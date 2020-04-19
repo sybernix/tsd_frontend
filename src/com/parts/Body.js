@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { Container, Grid } from "@material-ui/core/";
+import { Grid } from "@material-ui/core/";
 import { withStyles } from "@material-ui/core/styles";
-import Dashboard from "./dashboard/Dashboard";
-import MasterIndex from "./master/Index";
-import DefIndex from "./def/Index";
+import Dashboard from "../dashboard/Dashboard";
+import MasterIndex from "../master/Index";
+import DefIndex from "../def/Index";
 
 let drawerWidth = 250;
 let appbarHeight = 60;
