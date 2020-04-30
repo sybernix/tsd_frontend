@@ -5,10 +5,6 @@ import { Field, reduxForm, FormSection } from "redux-form";
 import { EditOutlined, DeleteOutline } from "@material-ui/icons";
 import { Row, Col, Card, Form, Button } from "bootstrap-4-react";
 
-import m_admin from "../../../lib/class/data/m_admin";
-import df_title from "../../../lib/class/data/df_title";
-import df_user_type from "../../../lib/class/data/df_user_type";
-import df_access_level from "../../../lib/class/data/df_access_level";
 import Contact from "../__common/Contact";
 
 import Call from "../../../lib/api/Call";

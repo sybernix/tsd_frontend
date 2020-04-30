@@ -189,7 +189,7 @@ class Manage extends Component {
                 mr={2}
                 mt={2}
               >
-                Save administrator settings
+                Save teacher settings
               </Button>
               <Button secondary type="reset" color="secondary" mt={2}>
                 Clear changes
