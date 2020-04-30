@@ -7,6 +7,7 @@ class m_student extends m_contact {
     this.reg_no = "";
     this.reg_date = null;
     this.end_date = null;
+    this.is_active = false;
   }
 
   set(values) {
@@ -15,6 +16,7 @@ class m_student extends m_contact {
     this.reg_no = values.reg_no;
     this.reg_date = values.reg_date;
     this.end_date = values.end_date;
+    this.is_active = values.is_active;
   }
 }
 
