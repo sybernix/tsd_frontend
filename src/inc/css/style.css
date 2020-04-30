@@ -10,6 +10,41 @@ body {
   font-family: "Pacifico", cursive !important;
 }
 
+form { 
+  width:100%;
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+}
+
+
 .MuiMenu-paper {
   top: 60px !important;
+}
+
+.MuiListItemText-root {
+  margin:  0 !important;
+}
+
+.MuiListSubheader-sticky {
+  margin-bottom: -13px;
+}
+
+.MuiTableCell-root {
+  font-size: 1rem!important;
+}
+
+.MuiOutlinedInput-input {
+  font-size: 16px !important;
+  padding: 14px !important;
+}
+
+.MuiOutlinedInput-root {
+  border-radius: 0 !important;
+}
+
+.MuiFormLabel-root {
+  line-height: 0.5 !important;
 }

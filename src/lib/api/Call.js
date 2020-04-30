@@ -1,9 +1,10 @@
 import axios from "axios";
-import { AppConstent } from "./../global/AppConstent";
+import { ApiBase, ApiClassPath }  from "../global/apiPath";
+import Variables from "../../lib/global/Variables";
 
 class Call {
 
-    static Request(type, token, data) {
+    static Request(type, token, data, className = "") {
         let method = "post";
         let url = "";
         let config = {};
@@ -16,11 +17,14 @@ class Call {
 
         switch (type) {
             case "login" : 
-                url = AppConstent.LOGIN_API;
-                data =  { userID: data.username, password: data.password }; 
+                url = ApiBase.LOGIN_API;
+                data =  { id: data.username, password: data.password }; 
                 break;
             case "validate" : 
-                url = AppConstent.VALIDATE_API;
+                url = ApiBase.VALIDATE_API;
+                break;
+            case "retrieve" : 
+                url = new ApiClassPath(className).RETRIEVE_API + data.id;
                 break;
             default: break;
         }

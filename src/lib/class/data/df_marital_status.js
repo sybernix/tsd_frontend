@@ -1,12 +1,15 @@
 class df_marital_status {
-    constructor() {
-        this.id = "";
-        this.status = "";
+    constructor(params = null) {
+        if(params == null) {
+            this.id = "";
+            this.status = "";
+        }
+        else this.set(params);
     }
 
     set(values){
-        this.id = this.id;
-        this.status = this.status;
+        this.id = values.id;
+        this.status = values.status;
     }
 }
 

@@ -9,9 +9,8 @@ import clsx from "clsx";
 import Cookies from 'js-cookie';
 
 import { Field, reduxForm } from "redux-form";
-import { getJWT } from './../../lib/global/helpers';
+import { getJWT, encrypt } from './../../lib/global/helpers';
 import Call from "./../../lib/api/Call";
-
 
 const styles = theme => ({
   paper: { marginTop: theme.spacing(8), display: "flex", flexDirection: "column", alignItems: "center" },
@@ -41,12 +40,23 @@ class Login extends Component {
     Call.Request("login", null, values)
     .then(response => {   
       let token = response.data.token;
-      let userType = response.data.userType;
       let exp = values.remember? 365 : 1;
-      Cookies.set('infinity', token, { expires: exp });
-      Cookies.set('usuario', userType, { expires: exp });
+      let userType = response.data.userType;
+      let user = null;
+
+      Call.Request("retrieve", token, { id: "admin001" }, userType)
+            .then(response => {
+                user = response.data;
+                Cookies.set('infinity', token, { expires: exp });
+                Cookies.set('usuario', encrypt(userType), { expires: exp });
+                Cookies.set('embose',  encrypt(user), { expires: exp });
+                this.props.history.push("/dashboard");
+            })
+            .catch(error => {
+                 console.log(error);
+                 return false;
+            });
       
-      this.props.history.push("/dashboard");
     })
     .catch(() => {
       this.props.dispatch(this.props.reset('loginVerification'));

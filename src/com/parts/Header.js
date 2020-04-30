@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { withStyles, useTheme, makeStyles } from "@material-ui/core/styles";
 import { AppBar, Toolbar, IconButton, Typography, InputBase, Badge, MenuItem, Menu } from "@material-ui/core";
 import { AccountCircle, MailIcon, Notifications as NotificationsIcon, MoreVert as MoreIcon, Menu as MenuIcon, SettingsPowerRounded as LogoutIcon } from "@material-ui/icons";
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 
 import AppDrawer from "./AppDrawer";
 import NotificationPanel from "./NotificationPanel";
@@ -19,7 +19,7 @@ const styles = theme => ({
   },
   grow: { flexGrow: 1 },
   menuButton: { [theme.breakpoints.up("sm")]: { display: "none" }, marginRight: theme.spacing(2) },
-  title: { display: "block", [theme.breakpoints.up("sm")]: { display: "block" } },
+  title: { display: "block", [theme.breakpoints.up("sm")]: { display: "block" }, color: "#FFFFFF", textDecoration: "none" },
   link: { textDecoration: "none" },
   sectionDesktop: { display: "none", [theme.breakpoints.up("md")]: { display: "flex" } },
   sectionMobile: { display: "flex", [theme.breakpoints.up("md")]: { display: "none" } },
@@ -144,7 +144,7 @@ class Header extends Component
         </Menu>
         );
     }
-
+    
     return (
       <div>
         <AppDrawer width={drawerWidth} open={this.state.mobileDrOpen} onClose={this.handleDrawerToggle} />
@@ -154,9 +154,9 @@ class Header extends Component
               <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="open drawer" onClick={this.handleDrawerToggle} >
                 <MenuIcon />
               </IconButton>
-              <Typography className={(classes.title, "pacifico")} variant="h6" noWrap >
+              <Link to="/" className={classes.title + " " + "pacifico"} variant="h6" noWrap >
                 Shilpa
-              </Typography>
+              </Link>
               <div className={classes.grow} />
               <div className={classes.sectionDesktop}>
                 <IconButton color="inherit" edge="end" aria-haspopup="true" onClick={this.handleNotificationToggle} >

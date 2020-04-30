@@ -2,27 +2,30 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { Grid } from "@material-ui/core/";
 import { withStyles } from "@material-ui/core/styles";
-import Dashboard from "../dashboard/Dashboard";
-import MasterIndex from "../master/Index";
-import DefIndex from "../def/Index";
+import Dashboard from "../content/dashboard/Index";
+import Master from "../content/master/Index";
+import Configuration from "../content/configuration/Index";
+import Administrators from "../content/administrators/Index";
+import Teachers from "../content/teachers/Index";
+import Parents from "../content/parents/Index";
 
 let drawerWidth = 250;
 let appbarHeight = 60;
 
-const styles = theme => ({
+const styles = (theme) => ({
   container: {
     [theme.breakpoints.up("sm")]: {
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
       position: "relative",
-      paddingTop: 20
+      paddingTop: 20,
     },
     padding: 20,
     paddingTop: appbarHeight + 20,
     top: 0,
     left: "auto",
-    right: 0
-  }
+    right: 0,
+  },
 });
 
 class Body extends Component {
@@ -36,8 +39,19 @@ class Body extends Component {
       <Grid className={classes.container}>
         <Router>
           <Switch>
-            <Route exact path="/master/*" component={MasterIndex}></Route>
-            <Route exact path="/def/*" component={DefIndex}></Route>
+            <Route exact path="/master/*" component={Master}></Route>
+            <Route
+              exact
+              path="/configuration/*"
+              component={Configuration}
+            ></Route>
+            <Route
+              exact
+              path="/administrators/"
+              component={Administrators}
+            ></Route>{" "}
+            <Route exact path="/teachers/*" component={Teachers}></Route>
+            <Route exact path="/parents/*" component={Parents}></Route>
             <Route exact path="/*" component={Dashboard}></Route>
           </Switch>
         </Router>

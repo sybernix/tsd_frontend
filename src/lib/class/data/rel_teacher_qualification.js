@@ -1,5 +1,6 @@
 import df_ed_qualification from "./df_ed_qualification"
 import df_ed_speciality from "./df_ed_speciality"
+import df_institute from "./df_institute"
 import m_teacher from "./m_teacher";
 
 class rel_teacher_qualification {
@@ -15,6 +16,7 @@ class rel_teacher_qualification {
         this.completed = false;
 
         this.__teacher = new m_teacher();
+        this.__institute = new df_institute();
         this.__ed_qualification = new df_ed_qualification();
         this.__ed_speciality = new df_ed_speciality();
     }
@@ -31,6 +33,7 @@ class rel_teacher_qualification {
         this.completed = values.completed;
 
         this.__teacher = values.__teacher;
+        this.__institute = values.__institute;
         this.__ed_qualification = values.__ed_qualification;
         this.__ed_speciality = values.__ed_speciality;
     }

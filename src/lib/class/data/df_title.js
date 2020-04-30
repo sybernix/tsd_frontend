@@ -1,7 +1,11 @@
 class df_title{
-    constructor() {
-        this.id = "";
-        this.title = "";
+    constructor(params = null) {
+        if(params == null) {
+            this.id = "";
+            this.title = "";
+        } else {
+            this.set(params);
+        }
     }
 
     set(values){
