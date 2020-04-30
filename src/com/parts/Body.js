@@ -9,6 +9,7 @@ import Administrators from "../content/administrators/Index";
 import Teachers from "../content/teachers/Index";
 import Parents from "../content/parents/Index";
 import Students from "../content/students/Index";
+import ExtraActivity from "../content/extra-activity/Index";
 
 let drawerWidth = 250;
 let appbarHeight = 60;
@@ -54,6 +55,11 @@ class Body extends Component {
             <Route exact path="/teachers/*" component={Teachers}></Route>
             <Route exact path="/parents/*" component={Parents}></Route>
             <Route exact path="/students/" component={Students}></Route>
+            <Route
+              exact
+              path="/extra-activity/*"
+              component={ExtraActivity}
+            ></Route>
             <Route exact path="/*" component={Dashboard}></Route>
           </Switch>
         </Router>

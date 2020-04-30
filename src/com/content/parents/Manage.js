@@ -97,6 +97,13 @@ class Manage extends Component {
               are listed here.
             </Card.Text>
             <hr />
+          </Card.Body>
+        </Card>
+        <Card mt={4}>
+          <Card.Body>
+            <Card.Title mb="2" text="muted">
+              Edit Parent
+            </Card.Title>
             <Form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
               <Row mb="2">
                 <Col col="sm-12">
