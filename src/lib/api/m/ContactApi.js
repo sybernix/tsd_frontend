@@ -41,6 +41,7 @@ export function contactRequest(api, data = {}, usetoken = true) {
     //get by id
     case "retrieveByID":
       method = "post";
+      console.log(data);
       url = "m/" + data.userType + "/retrieve/" + data._id;
       data.userType = undefined;
       data = { id: data._id };

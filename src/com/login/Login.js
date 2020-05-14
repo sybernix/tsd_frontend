@@ -77,7 +77,7 @@ class Login extends Component {
         Cookies.set("usuario", encrypt(userType), { expires: exp });
 
         contactRequest("retrieveByID", {
-          id: response.data.user_id,
+          _id: response.data.user_id,
           userType: userType,
         })
           .then((response) => {

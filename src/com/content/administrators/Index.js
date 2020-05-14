@@ -4,6 +4,7 @@ import { Typography, TextField } from "@material-ui/core";
 import { Field, reduxForm, reset, initialize, FormSection } from "redux-form";
 import { Row, Col, Card, Form, Button } from "bootstrap-4-react";
 import { AsyncTypeahead } from "react-bootstrap-typeahead";
+import addNotification from "react-push-notification";
 
 import { renderHidden } from "../../../lib/global/helpers";
 import m_admin from "../../../lib/class/data/m_admin";
@@ -73,6 +74,15 @@ class Administrator extends Component {
       .then((response) => {
         console.log(response.data.message);
         alert(response.data.message);
+
+        addNotification({
+          title: "Success",
+          subtitle: "Save New Administrator",
+          message: response.data.message,
+          theme: "darkblue",
+          native: true,
+        });
+
         dispatch(reset(formName));
         this.refSearch.current.clear();
         const admin = new m_admin();

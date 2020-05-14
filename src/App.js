@@ -1,6 +1,7 @@
 import React from "react";
-import { Switch, Route, withRouter  } from "react-router-dom";
-import Cookies from 'js-cookie';
+import { Switch, Route, withRouter } from "react-router-dom";
+import Cookies from "js-cookie";
+import { Notifications } from "react-push-notification";
 
 import Index from "./com/Index";
 import Login from "./com/login/Login";
@@ -15,19 +16,20 @@ class App extends React.Component {
   constructor(props) {
     super(props);
   }
-  
-  render() {   
+
+  render() {
     return (
       <div className="App">
-            <Switch>
-              <Route exact path="/login" component={Login}></Route>
-              <Route exact path="/forgot" component={Forgot}></Route>
-              <Authanitication>
-                <Route exact path="/logout" component={Logout}></Route>
-                <Route path="/*" component={Index}></Route>
-              </Authanitication>
-            </Switch>
-        </div>
+        <Notifications />
+        <Switch>
+          <Route exact path="/login" component={Login}></Route>
+          <Route exact path="/forgot" component={Forgot}></Route>
+          <Authanitication>
+            <Route exact path="/logout" component={Logout}></Route>
+            <Route path="/*" component={Index}></Route>
+          </Authanitication>
+        </Switch>
+      </div>
     );
   }
 }
