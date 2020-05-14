@@ -21,6 +21,7 @@ import { LockOutlined, Visibility, VisibilityOff } from "@material-ui/icons";
 import { withStyles } from "@material-ui/core/styles";
 import { Alert } from "@material-ui/lab";
 
+import addNotification from "react-push-notification";
 import clsx from "clsx";
 import Cookies from "js-cookie";
 
@@ -69,6 +70,14 @@ class Login extends Component {
   onSubmit = (values) => {
     loginRequest("login", values)
       .then((response) => {
+        addNotification({
+          title: "Success",
+          subtitle: "Logged In",
+          message: response.data.token,
+          theme: "darkblue",
+          native: true,
+        });
+        return;
         let token = response.data.token;
         let exp = values.remember ? 365 : 1;
         let userType = response.data.user_type;
