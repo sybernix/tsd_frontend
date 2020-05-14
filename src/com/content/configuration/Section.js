@@ -1,90 +1,80 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import { Typography, Grid, Avatar } from "@material-ui/core";
-import { Field, reduxForm } from "redux-form";
-import { EditOutlined, DeleteOutline } from "@material-ui/icons";
-import { Row, Col, Card, Form, Button } from "bootstrap-4-react";
+import { Typography } from "@material-ui/core";
+import { Field, reduxForm, reset, initialize } from "redux-form";
+import { Edit, DeleteOutline } from "@material-ui/icons";
+import { Grid, Row, Col, Card, Form, Button } from "bootstrap-4-react";
 
+import {
+  renderTextBox,
+  renderCheckBox,
+  renderHidden,
+} from "../../../lib/global/helpers";
 import m_class_section from "../../../lib/class/data/m_class_section";
-import Call from "../../../lib/api/Call";
-import { renderTextBox, renderCheckBox } from "../../../lib/global/helpers";
+import { classSectionRequest } from "../../../lib/api/m/ClassSectionApi";
+
 const styles = (theme) => ({});
+const formName = "sectionForm";
 
 class Section extends Component {
   constructor(props) {
     super(props);
+    this.state = { rows: [] };
+    this.refHeader = React.createRef();
   }
 
-  rows = [
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 1",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 2",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 3",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 4",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 5",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 6",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 7",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 8",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 9",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 10",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 11",
-      is_active: true,
-    }),
-  ];
+  loadData() {
+    classSectionRequest("retrieve")
+      .then((response) => {
+        this.setState({ rows: response.data });
+        this.props.dispatch(initialize(formName, new m_class_section()));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
-  onSubmit = (values) => {
-    console.log(values);
-    Call.Request("Section", null, values)
-      .then((response) => {})
-      .catch(() => {});
+  componentDidMount() {
+    this.loadData();
+  }
+
+  onSubmit = (values, dispatch) => {
+    let path = values._id !== "" ? "update" : "add";
+    classSectionRequest(path, values)
+      .then((response) => {
+        console.log(response.data.message);
+        alert(response.data.message);
+        dispatch(reset(formName));
+        this.loadData();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
+  onEditClick(id) {
+    classSectionRequest("retrieveByID", { _id: id })
+      .then((response) => {
+        window.scrollTo(0, this.refHeader.current.offsetTop);
+        const data = response.data;
+        const initialValues = data;
+        this.props.dispatch(initialize(formName, initialValues));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   render() {
-    const { classes, handleSubmit, submitting } = this.props;
+    const { classes, handleSubmit, submitting, reset } = this.props;
     return (
       <div>
-        <Typography component="h1" variant="h5" align="left">
+        <Typography
+          component="h1"
+          variant="h5"
+          align="left"
+          ref={this.refHeader}
+        >
           Sections
         </Typography>
         <Card mt={4}>
@@ -109,7 +99,7 @@ class Section extends Component {
                     name="grade"
                     required="required"
                     type="text"
-                    id="txtSection"
+                    id="txtGrade"
                     label="Class Grade"
                     placeholder="Enter Class Grade"
                     smalltext="Enter the class grade of the school"
@@ -121,6 +111,7 @@ class Section extends Component {
                 name="is_active"
                 id="chkIsActive"
                 label="Activate the current grade"
+                type="checkbox"
                 component={renderCheckBox}
               />
 
@@ -134,7 +125,13 @@ class Section extends Component {
               >
                 Save class grade settings
               </Button>
-              <Button secondary type="reset" color="secondary" mt={2}>
+              <Button
+                secondary
+                type="reset"
+                color="secondary"
+                mt={2}
+                onClick={reset}
+              >
                 Clear changes
               </Button>
             </form>
@@ -146,16 +143,16 @@ class Section extends Component {
               List of available classes already exists
             </Typography>
           </Col>
-          {this.rows.map((row, i) => (
+          {this.state.rows.map((row, i) => (
             <Col col="sm-12 md-6 lg-6 xl-4" key={i}>
-              <Card mt={4} id={row.id}>
+              <Card mt={4} id={row._id}>
                 <Card.Body>
                   <Card.Title>
-                    <Grid style={{ float: "right" }}>
-                      <EditOutlined fontSize="small" color="action" />
-                      <DeleteOutline fontSize="small" color="error" />
-                    </Grid>
-                    {row.id}
+                    {row._id}
+                    <Edit
+                      style={{ float: "right", cursor: "pointer" }}
+                      onClick={this.onEditClick.bind(this, row._id)}
+                    />
                   </Card.Title>
                   <Card.Subtitle mb="2" text="muted">
                     {row.grade}
@@ -180,5 +177,6 @@ class Section extends Component {
 
 export default reduxForm({
   enableReinitialize: true,
-  form: "SectionForm",
+  keepDirtyOnReinitialize: true,
+  form: formName,
 })(withStyles(styles)(Section));

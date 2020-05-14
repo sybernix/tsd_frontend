@@ -159,7 +159,7 @@
       {
         "id": 1,
         "name": "Manage Students",
-        "path": "/students/manage"
+        "path": "/students"
       }
     ]
   },

@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import { getJWT, decrypt } from "./../../lib/global/helpers";
 import Call from "../../lib/api/Call";
 import Variables from "../../lib/global/Variables";
+import { loginRequest } from "./../../lib/api/LoginApi";
 
 const styles = () => ({
   page: {
@@ -38,9 +39,9 @@ class Authanitication extends Component {
     } else {
       let userLevel = decrypt(jwt.userLevel);
       window.USER_PATH = userLevel;
-      Call.Request("validate", jwt.token, {})
+      loginRequest("verifyToken", jwt.token, {})
         .then((response) => {
-          this.setState({ userID: response.data.id });
+          this.setState({ userID: response.data.user_id });
           Variables.UserLevel = response.data.userType;
           Variables.UserID = response.data.id;
         })

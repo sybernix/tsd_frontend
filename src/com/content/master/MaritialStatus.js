@@ -1,41 +1,78 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, reset, initialize } from "redux-form";
 import { Edit } from "@material-ui/icons";
 import { Row, Col, Card, Button } from "bootstrap-4-react";
 
 import df_marital_status from "../../../lib/class/data/df_marital_status";
-import Call from "../../../lib/api/Call";
-import { renderTextBox } from "../../../lib/global/helpers";
+import { renderTextBox, renderHidden } from "../../../lib/global/helpers";
+import { maritalStatusRequest } from "../../../lib/api/df/MaritalStatusApi";
 
 const styles = (theme) => ({});
+const formName = "maritialStstusForm";
 
 class MaritialStatus extends Component {
   constructor(props) {
     super(props);
+    this.state = { rows: [] };
+    this.refHeader = React.createRef();
   }
 
-  rows = [
-    new df_marital_status({ id: "a2s1d2asd3546asd", status: "Married" }),
-    new df_marital_status({ id: "524a6s5d46a1sdsa", status: "Widowed" }),
-    new df_marital_status({ id: "524a6s5dsda1sd21", status: "Separated" }),
-    new df_marital_status({ id: "524a6s5d46a1ssdf", status: "Divorced" }),
-    new df_marital_status({ id: "524a6s5d46a1fsdd", status: "Single" }),
-  ];
+  loadData() {
+    maritalStatusRequest("retrieve")
+      .then((response) => {
+        this.setState({ rows: response.data });
+        let status = new df_marital_status();
+        this.props.dispatch(initialize(formName, status));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
-  onSubmit = (values) => {
-    console.log(values);
-    Call.Request("maritialstatus", null, values)
-      .then((response) => {})
-      .catch(() => {});
+  componentDidMount() {
+    this.loadData();
+  }
+
+  onSubmit = (values, dispatch) => {
+    let path = values._id !== "" ? "update" : "add";
+    maritalStatusRequest(path, values)
+      .then((response) => {
+        console.log(response.data.message);
+        alert(response.data.message);
+        dispatch(reset(formName));
+        this.loadData();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  onEditClick = (id) => {
+    console.log(id);
+    maritalStatusRequest("retrieveByID", { _id: id })
+      .then((response) => {
+        window.scrollTo(0, this.refHeader.current.offsetTop);
+        const data = response.data;
+        const initialValues = data;
+        this.props.dispatch(initialize(formName, initialValues));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   render() {
-    const { classes, handleSubmit, submitting } = this.props;
+    const { classes, handleSubmit, submitting, reset } = this.props;
     return (
       <div>
-        <Typography component="h1" variant="h5" align="left">
+        <Typography
+          component="h1"
+          variant="h5"
+          align="left"
+          ref={this.refHeader}
+        >
           Maritial Status
         </Typography>
         <Card mt={4}>
@@ -57,6 +94,12 @@ class MaritialStatus extends Component {
             </Card.Title>
 
             <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+              <Field
+                name="_id"
+                id="txtID"
+                type="hidden"
+                component={renderHidden}
+              />
               <Row>
                 <Col col="sm-12 md-10 lg-6">
                   <Field
@@ -82,7 +125,13 @@ class MaritialStatus extends Component {
               >
                 Save status settings
               </Button>
-              <Button secondary type="reset" color="secondary" mt={2}>
+              <Button
+                secondary
+                type="reset"
+                color="secondary"
+                mt={2}
+                onClick={reset}
+              >
                 Clear changes
               </Button>
             </form>
@@ -96,13 +145,16 @@ class MaritialStatus extends Component {
             </Typography>
           </Col>
 
-          {this.rows.map((row, i) => (
+          {this.state.rows.map((row, i) => (
             <Col col="sm-12 md-6 lg-6 xl-4" key={i}>
-              <Card mt={4} id={row.id}>
+              <Card mt={4} id={row._id}>
                 <Card.Body>
                   <Card.Title>
-                    <Edit style={{ float: "right" }} />
-                    {row.id}
+                    {row._id}
+                    <Edit
+                      style={{ float: "right", cursor: "pointer" }}
+                      onClick={this.onEditClick.bind(this, row._id)}
+                    />
                   </Card.Title>
                   <Card.Text mb="2" text="muted">
                     {row.status}
@@ -118,5 +170,7 @@ class MaritialStatus extends Component {
 }
 
 export default reduxForm({
-  form: "maritialStstusForm",
+  enableReinitialize: true,
+  keepDirtyOnReinitialize: true,
+  form: formName,
 })(withStyles(styles)(MaritialStatus));

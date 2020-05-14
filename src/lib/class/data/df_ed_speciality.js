@@ -1,14 +1,14 @@
 class df_ed_speciality {
   constructor(params = null) {
     if (params == null) {
-      this.id = "";
+      this._id = "";
       this.speciality = "";
       this.is_active = true;
     } else this.set(params);
   }
 
   set(values) {
-    this.id = values.id;
+    this._id = values._id;
     this.speciality = values.speciality;
   }
 }

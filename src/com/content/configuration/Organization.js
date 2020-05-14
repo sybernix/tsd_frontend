@@ -2,29 +2,54 @@ import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { Route } from "react-router-dom";
 import { Typography } from "@material-ui/core";
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, reset, initialize } from "redux-form";
 import { Row, Col, Card, Button } from "bootstrap-4-react";
 
+import { renderTextBox, renderHidden } from "../../../lib/global/helpers";
 import m_organization from "../../../lib/class/data/m_organization";
-import Call from "../../../lib/api/Call";
-import { renderTextBox, renderCheckBox } from "../../../lib/global/helpers";
+import { organizationRequest } from "../../../lib/api/m/OrganizationApi";
 
 const styles = (theme) => ({});
+const formName = "organizationForm";
 
 class Index extends Component {
   constructor(props) {
     super(props);
   }
 
-  onSubmit = (values) => {
+  loadData() {
+    organizationRequest("retrieve")
+      .then((response) => {
+        let val = response.data.length > 0 ? response.data[0] : null;
+        var org = new m_organization(val);
+        this.props.dispatch(initialize(formName, org));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  componentDidMount() {
+    this.loadData();
+  }
+
+  onSubmit = (values, dispatch) => {
     console.log(values);
-    Call.Request("accesslevel", null, values)
-      .then((response) => {})
-      .catch(() => {});
+    let path = values._id !== "" ? "update" : "add";
+    organizationRequest(path, values)
+      .then((response) => {
+        console.log(response.data.message);
+        alert(response.data.message);
+        dispatch(reset(formName));
+        this.loadData();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   render() {
-    const { classes, handleSubmit, submitting } = this.props;
+    const { classes, handleSubmit, submitting, reset } = this.props;
     return (
       <div>
         <Typography component="h1" variant="h5" align="left">
@@ -47,6 +72,12 @@ class Index extends Component {
               Edit Organization
             </Card.Title>
             <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+              <Field
+                name="_id"
+                id="txtID"
+                type="hidden"
+                component={renderHidden}
+              />
               <Row>
                 <Col col="sm-12 md-10 lg-6">
                   <Field
@@ -143,7 +174,13 @@ class Index extends Component {
                   >
                     Save organization details
                   </Button>
-                  <Button secondary type="reset" color="secondary" mt={2}>
+                  <Button
+                    secondary
+                    type="reset"
+                    color="secondary"
+                    mt={2}
+                    onClick={reset}
+                  >
                     Clear changes
                   </Button>
                 </Col>
@@ -158,5 +195,6 @@ class Index extends Component {
 
 export default reduxForm({
   enableReinitialize: true,
-  form: "organizationForm",
+  keepDirtyOnReinitialize: true,
+  form: formName,
 })(withStyles(styles)(Index));

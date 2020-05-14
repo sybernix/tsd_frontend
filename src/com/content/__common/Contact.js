@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import { Typography, Grid, Avatar } from "@material-ui/core";
-import { Field, reduxForm } from "redux-form";
-import { EditOutlined, DeleteOutline } from "@material-ui/icons";
+import { Typography } from "@material-ui/core";
+import { Field, reduxForm, reset, initialize } from "redux-form";
+import { Edit, DeleteOutline } from "@material-ui/icons";
 import { Row, Col, Card, Form, Button } from "bootstrap-4-react";
 
 import {
@@ -16,81 +16,87 @@ import df_title from "../../../lib/class/data/df_title";
 import df_user_type from "../../../lib/class/data/df_user_type";
 import df_access_level from "../../../lib/class/data/df_access_level";
 
+import { titleRequest } from "../../../lib/api/df/TitleApi";
+import { userTypeRequest } from "../../../lib/api/df/UserTypeApi";
+import { accessLevelRequest } from "../../../lib/api/df/AccessLevelApi";
+
 const styles = (theme) => ({});
+const formName = "accessLevelForm";
 
 class Contact extends Component {
   constructor(props) {
     super(props);
     console.log(props);
-    this.selectTitles = [];
-    this.selectUserTypes = [];
-    this.selectAccessLevels = [];
-
-    this.titles.map((row, i) => {
-      this.selectTitles.push({ id: row.id, name: row.title });
-    });
-
-    this.userTypes.map((row, i) => {
-      this.selectUserTypes.push({ id: row.id, name: row.type_name });
-    });
-
-    this.accessLevels.map((row, i) => {
-      this.selectAccessLevels.push({ id: row.id, name: row.level });
-    });
-
-    this.sexLevels = ["Male", "Female"];
+    this.state = {
+      selectTitles: [],
+      selectUserTypes: [],
+      selectAccessLevels: [],
+    };
+    this.titles = [];
+    this.userTypes = [];
+    this.accessLevels = [];
+    this.sexLevels = [
+      { id: "M", name: "Male" },
+      { id: "F", name: "Female" },
+    ];
   }
 
-  titles = [
-    new df_title({ id: "a2s1d2asd3546asd", title: "Master" }),
-    new df_title({ id: "524a6s5d46a1sdsa", title: "Mr." }),
-    new df_title({ id: "524a6s5dsda1sd21", title: "Miss" }),
-    new df_title({ id: "524a6s5d46a1ssdf", title: "Mrs." }),
-    new df_title({ id: "524a6s5d46a1fsdd", title: "Ms" }),
-    new df_title({ id: "524a6s5d46a1fsdd", title: "Sir" }),
-    new df_title({ id: "524a6s5d46a1fsdd", title: "Hon" }),
-    new df_title({ id: "524a6s5d46a1fsdd", title: "Ven" }),
-    new df_title({ id: "524a6s5d46a1fsdd", title: "Hon" }),
-    new df_title({ id: "524a6s5d46a1fsdd", title: "Dr" }),
-  ];
+  componentDidMount() {
+    this.loadData();
+  }
 
-  userTypes = [
-    new df_user_type({ id: "a2s1d2asd3546asd", type_name: "admin" }),
-    new df_user_type({ id: "524a6s5d46a1sdsa", type_name: "teacher" }),
-    new df_user_type({ id: "524a6s5dsda1sd21", type_name: "parent" }),
-    new df_user_type({ id: "524a6s5d46a1ssdf", type_name: "student" }),
-  ];
+  loadData() {
+    this.loadTitles();
+    this.loadAccessLevels();
+    this.loadUserTypes();
+  }
 
-  accessLevels = [
-    new df_access_level({
-      id: "a2s1d2asd3546asd",
-      level: "admin",
-      is_admin: true,
-      created_date: new Date(),
-      is_active: true,
-    }),
-    new df_access_level({
-      id: "524a6s5d46a1sd21",
-      level: "teacher",
-      is_admin: false,
-      created_date: new Date(),
-      is_active: true,
-    }),
-    new df_access_level({
-      id: "324a68da323a2s4d",
-      level: "parent",
-      is_admin: false,
-      created_date: new Date(),
-      is_active: true,
-    }),
-    new df_access_level({
-      id: "a56s4dasd121a23s",
-      level: "student",
-      is_admin: false,
-      created_date: new Date(),
-      is_active: true,
-    }),
-  ];
+  loadTitles() {
+    titleRequest("retrieve")
+      .then((response) => {
+        this.titles = response.data;
+        let selectTitles = [];
+        this.titles.map((row, i) => {
+          selectTitles.push({ id: row._id, name: row.title });
+        });
+        this.setState({ selectTitles: selectTitles });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  loadAccessLevels() {
+    accessLevelRequest("retrieve")
+      .then((response) => {
+        this.accessLevels = response.data;
+        let selectAccessLevels = [];
+        this.accessLevels.map((row, i) => {
+          selectAccessLevels.push({ id: row._id, name: row.level });
+        });
+        this.setState({ selectAccessLevels: selectAccessLevels });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  loadUserTypes() {
+    userTypeRequest("retrieve")
+      .then((response) => {
+        this.userTypes = response.data;
+        let selectUserTypes = [];
+        this.userTypes.map((row, i) => {
+          selectUserTypes.push({ id: row._id, name: row.type_name });
+        });
+        console.log(selectUserTypes);
+
+        this.setState({ selectUserTypes: selectUserTypes });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   render() {
     const { classes, handleSubmit, submitting } = this.props;
@@ -162,7 +168,7 @@ class Contact extends Component {
               id="cmbTitle"
               label="Select Title"
               smalltext="Select title of the user"
-              items={this.selectTitles}
+              items={this.state.selectTitles}
               component={renderSelect}
             />
           </Col>
@@ -179,7 +185,7 @@ class Contact extends Component {
           </Col>
           <Col col="sm-12 md-6 lg-4">
             <Field
-              name="second_name"
+              name="middle_name"
               type="text"
               id="txtSecondName"
               label="Second Name"
@@ -233,7 +239,7 @@ class Contact extends Component {
               id="cmbAccessLevel"
               label="Select access level"
               smalltext="Users access level for the system"
-              items={this.selectAccessLevels}
+              items={this.state.selectAccessLevels}
               component={renderSelect}
             />
           </Col>
@@ -244,7 +250,7 @@ class Contact extends Component {
               label="User Type"
               disabled
               smalltext="The user type is auto selected"
-              items={this.selectUserTypes}
+              items={this.state.selectUserTypes}
               selected="teacher"
               component={renderSelect}
             />
@@ -253,6 +259,7 @@ class Contact extends Component {
             <Field
               name="is_active"
               id="chkIsActive"
+              type="checkbox"
               label="Activate the user"
               component={renderCheckBox}
             />

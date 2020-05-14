@@ -3,7 +3,7 @@ import m_class_section from "./m_class_section";
 class df_subject {
   constructor(params = null) {
     if (params == null) {
-      this.id = "";
+      this._id = "";
       this.subject = "";
       this.class_section_id = 0;
       this.is_active = true;
@@ -15,7 +15,7 @@ class df_subject {
   }
 
   set(values) {
-    this.id = values.id;
+    this._id = values._id;
     this.subject = values.subject;
     this.class_section_id = values.class_section_id;
     this.is_active = values.is_active;

@@ -31,7 +31,6 @@ import SettingsInputAntennaIcon from "@material-ui/icons/SettingsInputAntenna";
 import SettingsIcon from "@material-ui/icons/Settings";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 
-import { Globals } from "../../lib/global/Globals";
 import Cookies from "js-cookie";
 import { decrypt } from "./../../lib/global/helpers";
 import data from "./../../data/menu.json";

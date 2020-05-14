@@ -1,14 +1,14 @@
 class m_class_section {
   constructor(params = null) {
     if (params == null) {
-      this.id = "";
+      this._id = "";
       this.grade = "";
       this.is_active = true;
     } else this.set(params);
   }
 
   set(values) {
-    this.id = values.id;
+    this._id = values._id;
     this.grade = values.grade;
     this.is_active = values.is_active;
   }

@@ -3,7 +3,7 @@ import df_occupation_category from "../../../lib/class/data/df_occupation_catego
 class df_occupation {
   constructor(params = null) {
     if (params == null) {
-      this.id = "";
+      this._id = "";
       this.occupation_category_id = "";
       this.occupation = "";
       this.is_active = true;
@@ -13,7 +13,7 @@ class df_occupation {
   }
 
   set(values) {
-    this.id = values.id;
+    this._id = values._id;
     this.occupation_category_id = values.occupation_category_id;
     this.occupation = values.occupation;
     this.is_active = values.is_active;

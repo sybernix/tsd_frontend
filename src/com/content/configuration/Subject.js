@@ -1,114 +1,124 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import { Typography, Grid, Avatar } from "@material-ui/core";
-import { Field, reduxForm } from "redux-form";
-import { EditOutlined, DeleteOutline } from "@material-ui/icons";
+import { Typography } from "@material-ui/core";
+import { Field, reduxForm, reset, initialize } from "redux-form";
+import { Edit, DeleteOutline } from "@material-ui/icons";
 import { Row, Col, Card, Form, Button } from "bootstrap-4-react";
 
-import df_subject from "../../../lib/class/data/df_subject";
-import m_class_section from "../../../lib/class/data/m_class_section";
-import Call from "../../../lib/api/Call";
 import {
   renderTextBox,
   renderCheckBox,
   renderSelect,
+  renderHidden,
 } from "../../../lib/global/helpers";
+import m_class_section from "../../../lib/class/data/m_class_section";
+import df_subject from "../../../lib/class/data/df_subject";
+import { classSectionRequest } from "../../../lib/api/m/ClassSectionApi";
+import { subjectRequest } from "../../../lib/api/m/SubjectApi";
 
 const styles = (theme) => ({});
+const formName = "subjectForm";
 
 class Subject extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      rows: [],
+    };
+    this.sections = [];
+    this.refHeader = React.createRef();
+
     this.gradeSelect = [];
-    this.sections.map((row, i) => {
-      this.gradeSelect.push({ id: row.id, name: row.grade });
-    });
   }
 
-  sections = [
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 1",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 2",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 3",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 4",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 5",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 6",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 7",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 8",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 9",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 10",
-      is_active: true,
-    }),
-    new m_class_section({
-      id: "a2s1d2asd3546asd",
-      grade: "Grade 11",
-      is_active: true,
-    }),
-  ];
+  loadData() {
+    this.gradeSelect = [];
+    classSectionRequest("retrieve")
+      .then((response) => {
+        this.sections = response.data;
+        this.sections.map((row, i) => {
+          this.gradeSelect.push({ id: row._id, name: row.grade });
+        });
 
-  rows = [
-    new df_subject({
-      id: "a2s1d2asd3546asd",
-      subject: "Sinhala",
-      class_section_id: "asdasde54332as",
-      __section: new m_class_section({
-        id: "a2s1d2asd3546asd",
-        grade: "Grade 1",
-        is_active: true,
-      }),
-      is_active: true,
-    }),
-  ];
+        if (this.sections.length == 0) return;
+        this.loadSubjects(this.sections[0]._id);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
-  onSubmit = (values) => {
-    console.log(values);
-    Call.Request("Subject", null, values)
-      .then((response) => {})
-      .catch(() => {});
+  loadSubjects(sectionID) {
+    let subjectList = [];
+    subjectRequest("find", {
+      name: "class_section_id",
+      value: sectionID,
+    })
+      .then((cresponse) => {
+        cresponse.data.map((row, i) => {
+          var section = this.sections.filter(
+            (val) => val._id == row.class_section_id
+          );
+          let clss = new df_subject(row);
+          clss.__section = new m_class_section(section);
+          subjectList.push(clss);
+        });
+
+        this.setState({ rows: subjectList });
+        this.props.dispatch(initialize(formName, new df_subject()));
+      })
+      .catch((error) => {
+        throw error;
+      });
+  }
+
+  componentDidMount() {
+    this.loadData();
+  }
+
+  onSubmit = (values, dispatch) => {
+    let path = values._id !== "" ? "update" : "add";
+    values.__section = undefined;
+    subjectRequest(path, values)
+      .then((response) => {
+        console.log(response.data.message);
+        alert(response.data.message);
+        dispatch(reset(formName));
+        this.loadData();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
+  onEditClick(id) {
+    subjectRequest("retrieveByID", { _id: id })
+      .then((response) => {
+        window.scrollTo(0, this.refHeader.current.offsetTop);
+        const data = response.data;
+        const initialValues = data;
+        this.props.dispatch(initialize(formName, initialValues));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  onFilterChange(event) {
+    let id = event.target.value;
+    this.loadSubjects(id);
+  }
+
   render() {
-    const { classes, handleSubmit, submitting } = this.props;
+    const { classes, handleSubmit, submitting, reset } = this.props;
     return (
       <div>
-        <Typography component="h1" variant="h5" align="left">
+        <Typography
+          component="h1"
+          variant="h5"
+          align="left"
+          ref={this.refHeader}
+        >
           Subjects
         </Typography>
         <Card mt={4}>
@@ -127,12 +137,19 @@ class Subject extends Component {
               Edit Subject
             </Card.Title>
             <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+              <Field
+                name="_id"
+                id="txtID"
+                type="hidden"
+                component={renderHidden}
+              />
               <Row>
                 <Col col="sm-12 md-10 lg-6">
                   <Field
                     name="class_section_id"
                     required="required"
-                    id="cmbSection"
+                    type="text"
+                    id="txtSection"
                     label="Select Grade"
                     smalltext="Select grade from the list"
                     items={this.gradeSelect}
@@ -157,10 +174,10 @@ class Subject extends Component {
               <Field
                 name="is_active"
                 id="chkIsActive"
+                type="checkbox"
                 label="Activate the current subject"
                 component={renderCheckBox}
               />
-
               <Button
                 disabled={submitting}
                 primary
@@ -186,7 +203,10 @@ class Subject extends Component {
           <Col col="sm-12 lg-6" mt={4}>
             <Form.Group>
               <label htmlFor="chkSelectGrade">Select Grade</label>
-              <Form.Select id="chkSelectGrade">
+              <Form.Select
+                id="chkSelectGrade"
+                onChange={this.onFilterChange.bind(this)}
+              >
                 {this.gradeSelect.map((item, i) => (
                   <option value={item.id} key={i}>
                     {item.name}
@@ -201,16 +221,16 @@ class Subject extends Component {
           </Col>
         </Row>
         <Row>
-          {this.rows.map((row, i) => (
+          {this.state.rows.map((row, i) => (
             <Col col="sm-12 md-6 lg-6 xl-4" key={i}>
               <Card mt={4} id={row.id}>
                 <Card.Body>
                   <Card.Title>
-                    <Grid style={{ float: "right" }}>
-                      <EditOutlined fontSize="small" color="action" />
-                      <DeleteOutline fontSize="small" color="error" />
-                    </Grid>
-                    {row.id}
+                    {row._id}
+                    <Edit
+                      style={{ float: "right", cursor: "pointer" }}
+                      onClick={this.onEditClick.bind(this, row._id)}
+                    />
                   </Card.Title>
                   <Card.Subtitle mb="2" text="muted">
                     {row.subject}
@@ -238,5 +258,6 @@ class Subject extends Component {
 
 export default reduxForm({
   enableReinitialize: true,
-  form: "SubjectForm",
+  keepDirtyOnReinitialize: true,
+  form: "subjectForm",
 })(withStyles(styles)(Subject));

@@ -1,16 +1,16 @@
 class df_access_level {
   constructor(params = null) {
     if (params == null) {
-      this.id = "";
+      this._id = "";
       this.level = "";
       this.is_admin = false;
-      this.created_date = null;
+      this.created_date = new Date();
       this.is_active = true;
     } else this.set(params);
   }
 
   set(params) {
-    this.id = params.id;
+    this._id = params._id;
     this.level = params.level;
     this.is_admin = params.is_admin;
     this.created_date = params.created_date;

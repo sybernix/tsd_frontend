@@ -1,7 +1,7 @@
 class df_ed_qualification {
   constructor(params = null) {
     if (params == null) {
-      this.id = "";
+      this._id = "";
       this.qualification = "";
       this.sort_order = 0;
       this.is_active = true;
@@ -9,7 +9,7 @@ class df_ed_qualification {
   }
 
   set(values) {
-    this.id = values.id;
+    this._id = values._id;
     this.qualification = values.qualification;
     this.sort_order = values.sort_order;
     this.is_active = values.is_active;
