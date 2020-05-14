@@ -34,9 +34,8 @@ class App extends React.Component {
       console.log(message);
       addNotification({
         title: message.data["firebase-messaging-msg-data"].notification.title,
-        subtitle: message.data["firebase-messaging-msg-data"].priority,
-        message:
-          message.data["firebase-messaging-msg-data"].notification.message,
+        //subtitle: message.data["firebase-messaging-msg-data"].priority,
+        message: message.data["firebase-messaging-msg-data"].notification.body,
         theme: "darkblue",
         native: true, // when using native, your OS will handle theming.
       });
